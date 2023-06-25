@@ -15,6 +15,10 @@
                 <div class="card-header">
                     <div class="card-title">
                         <button class="btn btn-primary" data-toggle="modal" data-target="#modaltambah" data-backdrop="static" data-keyboard="false">Tambah Data</button>
+                        <a href="<?= BASEURLKU ?>pdfstatis" target="_blank" class="btn btn-info" style="color: white;">Cetak Pdf Statis</a>
+                        <a href="<?= BASEURLKU ?>pdfdinamis" target="_blank" class="btn btn-danger" style="color: white;">Cetak Pdf Dinamis</a>
+                        <a href="<?= BASEURLKU ?>excelstatis" target="_blank" class="btn btn-success" style="color: white;">Cetak Excel Statis</a>
+                        <a href="<?= BASEURLKU ?>exceldinamis" target="_blank" class="btn btn-warning" style="color: white;">Cetak Excel Dinamis</a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -248,7 +252,6 @@
                 }
             },
             error: function() {
-                console.log(response);
                 swal({
                     title: "Gagal",
                     text: "Koneksi Ke Controller Gagal",

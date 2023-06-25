@@ -34,6 +34,8 @@
     <script src="<?= BASEURLKU; ?>writable/assets/js/atlantis.min.js"></script>
     <script src="<?= BASEURLKU; ?>writable/assets/js/plugin/datatables/datatables.min.js"></script>
     <script src="<?= BASEURLKU; ?>writable/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
 </head>
 
 <body>
@@ -70,6 +72,9 @@
                             </a></li>
                         <li class="nav-item" id="mndata"><a href="<?= BASEURLKU; ?>bookdata"><i class="icon-note"></i>
                                 <p>Data</p>
+                            </a></li>
+                        <li class="nav-item" id="mntentang"><a href="<?= BASEURLKU; ?>customer"><i class="icon-tag"></i>
+                                <p>Pelanggan</p>
                             </a></li>
                         <li class="nav-item" id="mntentang"><a href="<?= BASEURLKU; ?>about"><i class="icon-tag"></i>
                                 <p>Tentang</p>

@@ -82,8 +82,48 @@
         </div>
 
     </div>
+
 </div>
 
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body" id="blokgrafik1"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body" id="blokgrafik2"></div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">
+            <div class="form-group col-md-12">
+                <label>Penerbit</label>
+                <select class="form-control" id="cbopenerbit" onchange="caridatagrafik()">
+                    <option value="">Pilih Salah Satu</option>
+                    <?php
+                    if (is_array($dtpenerbit)) {
+                        if (count($dtpenerbit) > 0) {
+                            foreach ($dtpenerbit as $k) {
+                                $id = $k->ID_Penerbit;
+                                $nama = $k->Nama_Penerbit;
+                                echo "<option value='$id'>$nama</option>";
+                            }
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="card-body" id="blokgrafik3"></div>
+    </div>
+</div>
+
+<script src="<?= BASEURLKU ?>writable/assets/highcharts.js"></script>
 <script>
     $("#mnberanda").addClass("active");
 
@@ -126,6 +166,175 @@
                 });
                 $("#blokhasil").html("");
             }
+        });
+    }
+
+    grafikstatis();
+
+    function grafikstatis() {
+        Highcharts.chart('blokgrafik1', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Grafik Data Statis'
+            },
+            subtitle: {
+                text: 'Data Penjualan 2022'
+            },
+            xAxis: {
+                categories: ["Jan", "Feb", "Mar", "Apr", "Mei", "jun"],
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Unit'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size: 15px;">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color: {series.color};padding:0">{series.name}:</td>' + '<td style="padding: 0;">&nbsp<b>{point.y:.0f}Unit</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: 'Penjualan HP',
+                data: [66, 71, 106, 129, 144, 176]
+            }]
+        });
+    }
+
+    grafikdinamis();
+
+    function grafikdinamis() {
+        Highcharts.chart('blokgrafik2', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Grafik Data Dinamis'
+            },
+            subtitle: {
+                text: 'Data Buku Per Tahun'
+            },
+            xAxis: {
+                categories: [
+                    <?php
+                    foreach ($dtgrafik as $k) {
+                        echo "'" . $k->Tahun_Terbit . "',";
+                    }
+                    ?>
+                ],
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Buah'
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size: 15px;">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color: {series.color};padding:0">{series.name}:</td>' + '<td style="padding: 0;">&nbsp<b>{point.y:.0f} Buah</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: 'Data Buku',
+                data: [
+                    <?php
+                    foreach ($dtgrafik as $k) {
+                        echo $k->Jumlah . ",";
+                    }
+                    ?>
+                ]
+            }]
+        });
+    }
+
+    function caridatagrafik() {
+        let penerbit = $("#cbopenerbit").val();
+        if (penerbit != "") {
+            $.getJSON(`<?= BASEURLKU ?>grafik/${penerbit}`, function(result) {
+                if (result.length != 0) {
+                    var tahunf = [];
+                    var jumlahf = [];
+                    $.each(result, function(i, key) {
+                        let th = key.Tahun_Terbit;
+                        let jml = key.Jumlah;
+                        tahunf.push(th);
+                        jumlahf.push(parseInt(jml));
+                    })
+                    buatgrafik(tahunf, jumlahf);
+                } else {
+                    swal({
+                        title: "Gagal",
+                        text: "Data Tidak di Temukan",
+                        icon: "error"
+                    });
+                }
+            })
+        } else {
+            $("#blokgrafik3").html("");
+        }
+    }
+
+    function buatgrafik(tahunf, jumlahf) {
+        Highcharts.chart('blokgrafik3', {
+            chart: {
+                type: 'areaspline'
+            },
+            title: {
+                text: "Grafik Buku By Penerbit"
+            },
+            subtitle: {
+                text: 'Pengelompokan Berdasarkan Tahun'
+            },
+            xAxis: {
+                categories: tahunf,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: ''
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size: 15px;">{point.key}</span><table>',
+                pointFormat: '<tr><td style="color: {series.color};padding:0">{series.name}:</td>' + '<td style="padding: 0;">&nbsp<b>{point.y:.0f} Buah</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+            series: [{
+                name: 'Jumlah Buku',
+                data: jumlahf
+            }]
         });
     }
 </script>

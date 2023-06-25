@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\Mdata;
+use App\Libraries\SimpleXLSXGen;
 
 class Basis extends BaseController
 {
@@ -14,6 +15,8 @@ class Basis extends BaseController
         $x["maxtahun"] = $dtx->getMaxTahun();
         $x["maxpenerbit"] = $dtx->getMaxPenerbit();
         $x["maxrak"] = $dtx->getMaxRak();
+        $x['dtgrafik'] = $dtx->getBuku_perTahun();
+        $x['dtpenerbit'] = $dtx->getPenerbit();
         return view("home", $x);
     }
 
@@ -184,6 +187,79 @@ class Basis extends BaseController
         } else {
             $sql = "SELECT Judul FROM buku WHERE Rak LIKE'" . $nilai . "%'";
         }
+        $hasil = $dtx->RekapDashboard($sql);
+        echo json_encode($hasil);
+    }
+
+    public function pelanggan()
+    {
+        $x["hal"] = "pelanggan";
+        return view("home", $x);
+    }
+
+    public function cetakpdf()
+    {
+        require_once WRITEPATH . 'assets/vendor/autoload.php';
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A4-P']);
+        $mpdf->setFooter('hal {PAGENO}');
+        $mpdf->SetAuthor('Pemrograman Web');
+        $mpdf->WriteHTML("<h1>Ini File PDF Statis dari mPDF</h1>");
+        // $mpdf->Output("statis.pdf", "D");
+    }
+
+    public function cetakpdf2()
+    {
+        require_once WRITEPATH . 'assets/vendor/autoload.php';
+        $dtx = new Mdata();
+        $x["dtbuku"] = $dtx->getBuku();
+        $hasil = view("print", $x, [true]);
+        $mpdf = new \Mpdf\Mpdf(['mode' => 'utf-8', 'format' => 'A3-L']);
+        $mpdf->SetFooter('hal {PAGENO}');
+        $mpdf->SetAuthor('Pemrograman Web');
+        $mpdf->WriteHTML($hasil);
+        $mpdf->Output("dinamis.pdf", "D");
+    }
+
+    public function cetakexcel1()
+    {
+        $dtx = new SimpleXLSXGen();
+        $dataku = [
+            ['kolom1', 'kolom2', 'kolom3'],
+            ['cell1-1', 'cell1-2', 'cell1-3'],
+            ['cell2-1', 'cell2-2', 'cell2-3']
+        ];
+        $xlxs = $dtx->fromArray($dataku);
+        $xlxs->downloadAs('statis.xlsx');
+    }
+
+    public function cetakexcel2()
+    {
+        $gen = new SimpleXLSXGen();
+        $dtx = new Mdata();
+        $dtk = [];
+        array_push($dtk, ["<b><center>Daftar Buku</center></b>"]);
+        array_push($dtk, ["<b><center>Kode Buku</center></b>", "<b>Judul</b>", "<b>Pengarang</b>", "<b>Penerbit</b>"]);
+        $dtbuku = $dtx->getBuku();
+        foreach ($dtbuku as $k) {
+            $kode = $k->Kode_Buku;
+            $judul = $k->Judul;
+            $pengarang = $k->Pengarang;
+            $penerbit = $k->Penerbit;
+            array_push($dtk, ["<center>$kode</center>", $judul, $pengarang, $penerbit]);
+        }
+        $xlsx = $gen->fromArray($dtk);
+        $xlsx->mergeCells('A1:D1');
+        $xlsx->setColWidth(2, 75);
+        $xlsx->setColWidth(3, 40);
+        $xlsx->setColWidth(4, 40);
+        $xlsx->downloadAs('dinamis.xlsx');
+    }
+
+    public function getGrafik()
+    {
+        $dtx = new Mdata();
+        $idpenerbit = $this->request->uri->getSegment(2);
+        $sql = "SELECT Tahun_Terbit, COUNT(*) AS Jumlah FROM buku WHERE ID_Penerbit = '$idpenerbit' GROUP BY Tahun_Terbit ORDER BY Tahun_Terbit";
         $hasil = $dtx->RekapDashboard($sql);
         echo json_encode($hasil);
     }

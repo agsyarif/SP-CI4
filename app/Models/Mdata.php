@@ -130,4 +130,15 @@ class Mdata extends Model
             return 0;
         }
     }
+
+    public function getBuku_perTahun()
+    {
+        $sql = "SELECT Tahun_Terbit, COUNT(*) AS Jumlah FROM buku GROUP BY Tahun_Terbit ORDER BY Tahun_Terbit";
+        $dt = db_connect()->query($sql);
+        if ($dt) {
+            return $dt->getResult();
+        } else {
+            return "0";
+        }
+    }
 }

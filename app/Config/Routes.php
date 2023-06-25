@@ -46,6 +46,14 @@ $routes->post('/delbook', 'Basis::HapusData');
 
 $routes->get('/rekapdashboard/(:any)', 'Basis::RekapDashboard');
 
+$routes->get('/customer', 'Basis::Pelanggan');
+$routes->get('/pdfstatis', 'Basis::cetakpdf');
+$routes->get('/pdfdinamis', 'Basis::cetakpdf2');
+$routes->get('/excelstatis', 'Basis::cetakexcel1');
+$routes->get('/exceldinamis', 'Basis::cetakexcel2');
+$routes->get('/grafik/(:any)', 'Basis::getGrafik');
+
+
 $routes->get('/praktek5', 'Praktek5::index');
 $routes->get('/praktek5/integrasi', 'Praktek5::integrasi');
 
